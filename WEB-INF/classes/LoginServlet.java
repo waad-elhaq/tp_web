@@ -40,17 +40,15 @@ public class LoginServlet extends HttpServlet {
 
             HttpSession session = request.getSession(false);
 
-            if (session == null
-                    || session.getAttribute("user") == null) {
-                response.sendRedirect(
-                        request.getContextPath() + "/login.html");
+            if (session == null || !(session.getAttribute("user") instanceof SessionUser)) {
+                response.sendRedirect(request.getContextPath() + "/login.html");
                 return;
             }
 
-            session.setAttribute("user", newUsername.trim());
+            SessionUser updatedUser = new SessionUser(newUsername.trim());
+            session.setAttribute("user", updatedUser);
 
-            response.sendRedirect(
-                    request.getContextPath() + "/LoginServlet");
+            response.sendRedirect(request.getContextPath() + "/LoginServlet");
             return;
         }
 
@@ -64,10 +62,11 @@ public class LoginServlet extends HttpServlet {
         }
 
         HttpSession session = request.getSession();
-        session.setAttribute("user", username.trim());
 
-        response.sendRedirect(
-                request.getContextPath() + "/LoginServlet");
+        SessionUser sessionUser = new SessionUser(username.trim());
+        session.setAttribute("user", sessionUser);
+
+        response.sendRedirect(request.getContextPath() + "/LoginServlet");
     }
 
     @Override
@@ -78,11 +77,17 @@ public class LoginServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         HttpSession session = request.getSession(false);
-        String username = null;
+        SessionUser sessionUser = null;
 
         if (session != null) {
-            username = (String) session.getAttribute("user");
+            Object userAttribute = session.getAttribute("user");
+
+            if (userAttribute instanceof SessionUser) {
+                sessionUser = (SessionUser) userAttribute;
+            }     
         }
+
+        String username = sessionUser == null ? null : sessionUser.getUsername();
 
         PrintWriter out = response.getWriter();
 
