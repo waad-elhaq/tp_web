@@ -38,8 +38,15 @@ public class LoggingFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         System.out.println(logPrefix + " Before servlet: " + httpRequest.getRequestURL());
-        chain.doFilter(request, response);
-        System.out.println(logPrefix + " After servlet: " + httpRequest.getRequestURL());
+        long startTime = System.nanoTime();
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            long endTime = System.nanoTime();
+            double executionTimeMs = (endTime - startTime) / 1_000_000.0;
+            System.out.println(logPrefix + " After servlet: " + httpRequest.getRequestURL());
+            System.out.printf("%s Request execution time: %.3f ms%n", logPrefix, executionTimeMs);
+        }
     }
 
 
