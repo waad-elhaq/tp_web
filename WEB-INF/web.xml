@@ -5,21 +5,38 @@
          http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
-
     <filter>
         <filter-name>LoggingFilter</filter-name>
         <filter-class>LoggingFilter</filter-class>
 
         <init-param>
             <param-name>logPrefix</param-name>
-            <param-value>[Lab1_Filter]</param-value>
+            <param-value>[Lab1_LogFilter]</param-value>
         </init-param>
     </filter>
+  
+    <filter>
+        <filter-name>SecurityFilter</filter-name>
+        <filter-class>SecurityFilter</filter-class>
+
+        <init-param>
+            <param-name>logPrefix</param-name>
+            <param-value>[Lab1_SecFilter]</param-value>
+        </init-param>
+    </filter>
+
 
     <filter-mapping>
         <filter-name>LoggingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>SecurityFilter</filter-name>
+        <url-pattern>/ListItems</url-pattern>
+    </filter-mapping>
+
+    
 
 
     <servlet>

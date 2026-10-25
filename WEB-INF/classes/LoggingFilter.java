@@ -45,6 +45,6 @@ public class LoggingFilter implements Filter {
 
     @Override
     public void destroy() {
-        System.out.println("LoggingFilter destroyed");
+        System.out.println(logPrefix + "LoggingFilter destroyed");
     }
 }
