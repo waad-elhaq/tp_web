@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.ServletContext;
 
 public class ShowSession extends HttpServlet {
 
@@ -18,7 +19,7 @@ public class ShowSession extends HttpServlet {
             throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
-
+        
         HttpSession session = request.getSession();
         Integer count;
         try {
@@ -32,7 +33,11 @@ public class ShowSession extends HttpServlet {
             count++;
         }
         session.setAttribute("visitCount", count);
-
+        ServletContext context = getServletContext();
+        Integer activeSessions = (Integer) context.getAttribute("activeSessions");
+        if (activeSessions == null) {
+             activeSessions = 0;
+        }
         String fullName = (String) session.getAttribute("fullName");
         String birthDate = (String) session.getAttribute("birthDate");
 
@@ -64,6 +69,11 @@ public class ShowSession extends HttpServlet {
                 + count + "</p>");
         out.println("<p><a href='ShowSession'>Visit again</a></p>");
         out.println("<p><a href='index.html'>Back to main form</a></p>");
+        out.println("<p>Currently active sessions: " + activeSessions + "</p>");
+        out.println("<form action='ShowSession' method='post'>");
+        out.println("<input type='hidden' name='action' value='invalidate'>");
+        out.println("<button type='submit'>Invalidate Session</button>");
+        out.println("</form>");
         out.println("</body></html>");
     }
 
@@ -73,7 +83,15 @@ public class ShowSession extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-
+        String action = request.getParameter("action");
+        if ("invalidate".equals(action)) {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
+            response.sendRedirect(request.getContextPath() + "/index.html");
+            return;
+        }
         String fullName = request.getParameter("fullName");
         String birthDate = request.getParameter("birthDate");
 
