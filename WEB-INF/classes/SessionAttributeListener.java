@@ -17,10 +17,13 @@ public class SessionAttributeListener
 
     @Override
     public void attributeReplaced(HttpSessionBindingEvent event) {
+        String oldValue = (String) event.getValue();
+        String newValue = (String) event.getSession().getAttribute(event.getName());
         System.out.println(
                 "[SessionAttributeListener] Attribute replaced: "
                 + event.getName()
-                + " (old value: " + event.getValue() + ")"
+                + " | Old value: " + oldValue
+                + " | New value: " + newValue
         );
     }
 
